@@ -704,10 +704,17 @@ h3 {
   box-shadow:
     0 34px 90px oklch(9% 0.02 30 / 0.46),
     0 8px 0 oklch(39% 0.135 31 / 0.18);
-  transform: rotateX(var(--tilt-x)) rotateY(var(--tilt-y)) translateZ(0);
+  backface-visibility: hidden;
+  opacity: 0;
+  transform: translate3d(0, 34px, 0) rotateX(15deg) rotateY(-6deg) scale(0.94);
   transform-style: preserve-3d;
-  transition: transform 0.16s ease-out;
-  animation: menu-card-open 0.78s var(--motion-ease) both;
+  transition: transform 0.54s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform, opacity;
+}
+
+.menu-viewer.is-open .menu-viewer__card {
+  opacity: 1;
+  transform: rotateX(var(--tilt-x)) rotateY(var(--tilt-y)) translateZ(0) scale(1);
 }
 
 .menu-viewer__card::before {
@@ -790,26 +797,6 @@ h3 {
 .menu-viewer__close:focus-visible {
   outline: 2px solid white;
   outline-offset: 3px;
-}
-
-@keyframes menu-card-open {
-  0% {
-    filter: blur(8px);
-    opacity: 0;
-    transform: translate3d(0, 72px, -260px) rotateX(66deg) rotateY(-32deg) scale(0.72);
-  }
-
-  58% {
-    filter: blur(0);
-    opacity: 1;
-    transform: translate3d(0, -10px, 34px) rotateX(-5deg) rotateY(7deg) scale(1.02);
-  }
-
-  100% {
-    filter: blur(0);
-    opacity: 1;
-    transform: rotateX(var(--tilt-x)) rotateY(var(--tilt-y)) translateZ(0) scale(1);
-  }
 }
 
 @keyframes menu-sheen {

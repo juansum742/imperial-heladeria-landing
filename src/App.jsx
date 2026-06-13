@@ -472,6 +472,8 @@ function MenuViewer({ item, onClose }) {
 
     closeButtonRef.current?.focus();
     document.body.classList.add("modal-open");
+    cardRef.current?.style.setProperty("--tilt-x", "0deg");
+    cardRef.current?.style.setProperty("--tilt-y", "0deg");
 
     const handleKeyDown = (event) => {
       if (event.key === "Escape") onClose();
@@ -529,6 +531,7 @@ function MenuViewer({ item, onClose }) {
       </button>
       <div className="menu-viewer__scene">
         <div
+          key={item?.caption ?? "menu-viewer-empty"}
           ref={cardRef}
           className="menu-viewer__card"
           role="dialog"
