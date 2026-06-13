@@ -465,15 +465,12 @@ function Lightbox({ item, onClose }) {
 
 function MenuViewer({ item, onClose }) {
   const closeButtonRef = useRef(null);
-  const cardRef = useRef(null);
 
   useEffect(() => {
     if (!item) return undefined;
 
     closeButtonRef.current?.focus();
     document.body.classList.add("modal-open");
-    cardRef.current?.style.setProperty("--tilt-x", "0deg");
-    cardRef.current?.style.setProperty("--tilt-y", "0deg");
 
     const handleKeyDown = (event) => {
       if (event.key === "Escape") onClose();
@@ -485,25 +482,6 @@ function MenuViewer({ item, onClose }) {
       document.body.classList.remove("modal-open");
     };
   }, [item, onClose]);
-
-  function handlePointerMove(event) {
-    const card = cardRef.current;
-    if (!card) return;
-
-    const rect = card.getBoundingClientRect();
-    const x = (event.clientX - rect.left) / rect.width - 0.5;
-    const y = (event.clientY - rect.top) / rect.height - 0.5;
-
-    card.style.setProperty("--tilt-x", `${(-y * 7).toFixed(2)}deg`);
-    card.style.setProperty("--tilt-y", `${(x * 8).toFixed(2)}deg`);
-  }
-
-  function handlePointerLeave() {
-    const card = cardRef.current;
-    if (!card) return;
-    card.style.setProperty("--tilt-x", "0deg");
-    card.style.setProperty("--tilt-y", "0deg");
-  }
 
   function handleClose(event) {
     event?.preventDefault();
@@ -532,13 +510,10 @@ function MenuViewer({ item, onClose }) {
       <div className="menu-viewer__scene">
         <div
           key={item?.caption ?? "menu-viewer-empty"}
-          ref={cardRef}
           className="menu-viewer__card"
           role="dialog"
           aria-modal="true"
           aria-label={item?.caption ?? "Menú real"}
-          onPointerMove={handlePointerMove}
-          onPointerLeave={handlePointerLeave}
         >
           <img src={item?.src ?? saboresCartel} alt={item?.alt ?? ""} />
           <div className="menu-viewer__caption">
