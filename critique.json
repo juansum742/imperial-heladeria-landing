@@ -1,0 +1,26 @@
+{
+  "kind": "critique-panel",
+  "score": 4.3,
+  "axes": {
+    "clarity": {
+      "score": 4,
+      "notes": "El storyboard convierte la landing en ocho planos claros: fachada, local, heladeria, sabores, cafeteria, ambiente, visita y cierre."
+    },
+    "hierarchy": {
+      "score": 4,
+      "notes": "Cada frame sostiene una sola idea con tipografia grande, foto protagonista y apoyo visual secundario cuando corresponde."
+    },
+    "typography": {
+      "score": 4,
+      "notes": "La serif mantiene la identidad clasica de Imperial y la sans queda reservada para etiquetas, controles y apoyo breve."
+    },
+    "motion": {
+      "score": 4,
+      "notes": "Incluye autoplay de tres segundos, transiciones fade, avance por click y teclado, barra de progreso y movimientos suaves de foto."
+    },
+    "brand": {
+      "score": 5,
+      "notes": "Usa logo real, borgona/crema, fachada, menus y producto fotografico del proyecto sin introducir assets externos."
+    }
+  }
+}
