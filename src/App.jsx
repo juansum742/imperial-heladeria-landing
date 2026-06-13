@@ -271,16 +271,21 @@ function Story() {
   );
 }
 
-function ProductMedia({ photo, sheet }) {
+function ProductMedia({ photo, sheet, onOpenMenu }) {
   return (
     <div className="product-feature__media" aria-label="Composición visual de producto">
       <figure className={`feature-photo${photo.coffee ? " feature-photo--coffee" : ""}`}>
         <img src={photo.src} alt={photo.alt} />
       </figure>
-      <figure className={`menu-sheet${sheet.left ? " menu-sheet--left" : ""}`}>
+      <button
+        className={`menu-sheet${sheet.left ? " menu-sheet--left" : ""}`}
+        type="button"
+        aria-label={`Abrir ${sheet.caption}`}
+        onClick={() => onOpenMenu(sheet)}
+      >
         <img src={sheet.src} alt={sheet.alt} />
-        <figcaption>{sheet.caption}</figcaption>
-      </figure>
+        <span className="menu-sheet__caption">{sheet.caption}</span>
+      </button>
     </div>
   );
 }
@@ -308,8 +313,8 @@ function ProductCopy({ feature }) {
   );
 }
 
-function ProductFeature({ feature }) {
-  const media = <ProductMedia photo={feature.photo} sheet={feature.sheet} />;
+function ProductFeature({ feature, onOpenMenu }) {
+  const media = <ProductMedia photo={feature.photo} sheet={feature.sheet} onOpenMenu={onOpenMenu} />;
   const copy = <ProductCopy feature={feature} />;
 
   return (
@@ -320,7 +325,7 @@ function ProductFeature({ feature }) {
   );
 }
 
-function Products() {
+function Products({ onOpenMenu }) {
   return (
     <section className="section" id="productos" data-od-id="productos-destacados">
       <div className="container">
@@ -336,7 +341,7 @@ function Products() {
 
         <div className="product-sections">
           {productFeatures.map((feature) => (
-            <ProductFeature key={feature.id} feature={feature} />
+            <ProductFeature key={feature.id} feature={feature} onOpenMenu={onOpenMenu} />
           ))}
         </div>
       </div>
@@ -458,8 +463,94 @@ function Lightbox({ item, onClose }) {
   );
 }
 
+function MenuViewer({ item, onClose }) {
+  const closeButtonRef = useRef(null);
+  const cardRef = useRef(null);
+
+  useEffect(() => {
+    if (!item) return undefined;
+
+    closeButtonRef.current?.focus();
+    document.body.classList.add("modal-open");
+
+    const handleKeyDown = (event) => {
+      if (event.key === "Escape") onClose();
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      document.body.classList.remove("modal-open");
+    };
+  }, [item, onClose]);
+
+  function handlePointerMove(event) {
+    const card = cardRef.current;
+    if (!card) return;
+
+    const rect = card.getBoundingClientRect();
+    const x = (event.clientX - rect.left) / rect.width - 0.5;
+    const y = (event.clientY - rect.top) / rect.height - 0.5;
+
+    card.style.setProperty("--tilt-x", `${(-y * 7).toFixed(2)}deg`);
+    card.style.setProperty("--tilt-y", `${(x * 8).toFixed(2)}deg`);
+  }
+
+  function handlePointerLeave() {
+    const card = cardRef.current;
+    if (!card) return;
+    card.style.setProperty("--tilt-x", "0deg");
+    card.style.setProperty("--tilt-y", "0deg");
+  }
+
+  function handleClose(event) {
+    event?.preventDefault();
+    event?.stopPropagation();
+    onClose();
+  }
+
+  return (
+    <div
+      className={`menu-viewer${item ? " is-open" : ""}`}
+      aria-hidden={!item}
+      onClick={(event) => {
+        if (event.target === event.currentTarget) onClose();
+      }}
+    >
+      <button
+        ref={closeButtonRef}
+        className="menu-viewer__close"
+        type="button"
+        aria-label="Cerrar menú"
+        onPointerDown={(event) => event.stopPropagation()}
+        onClick={handleClose}
+      >
+        ×
+      </button>
+      <div className="menu-viewer__scene">
+        <div
+          ref={cardRef}
+          className="menu-viewer__card"
+          role="dialog"
+          aria-modal="true"
+          aria-label={item?.caption ?? "Menú real"}
+          onPointerMove={handlePointerMove}
+          onPointerLeave={handlePointerLeave}
+        >
+          <img src={item?.src ?? saboresCartel} alt={item?.alt ?? ""} />
+          <div className="menu-viewer__caption">
+            <span>{item?.caption ?? "Menú real"}</span>
+            <strong>Heladería Imperial</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function App() {
   const [lightboxItem, setLightboxItem] = useState(null);
+  const [menuItem, setMenuItem] = useState(null);
   useRevealMotion();
 
   return (
@@ -469,13 +560,14 @@ export default function App() {
         <main id="inicio">
           <Hero />
           <Story />
-          <Products />
+          <Products onOpenMenu={setMenuItem} />
           <Gallery onOpen={setLightboxItem} />
           <Visit />
         </main>
         <Footer />
       </div>
       <Lightbox item={lightboxItem} onClose={() => setLightboxItem(null)} />
+      <MenuViewer item={menuItem} onClose={() => setMenuItem(null)} />
     </>
   );
 }
